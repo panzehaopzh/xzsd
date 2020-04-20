@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.driver.dao.DriverDao">
+
+    <!--统计司机账号和联系电话数量-->
+    <select id="countDriverAcct" parameterType="com.xzsd.pc.driver.entity.DriverInfo" resultType="int">
+        select count(user_code)
+        from t_sys_user
+        where is_delete = 0
+        and (user_account = #{driverAccount}
+         or phone = #{phone})
+        <if test="driverCode != null and driverCode != ''">
+            and user_code != #{driverCode}
+        </if>
+    </select>
+
+    <!--新增司机信息-->
+    <insert id="addDriver" parameterType="com.xzsd.pc.driver.entity.DriverInfo">
+        insert into t_sys_driver
+        (driver_code,
+         province_id,
+         city_id,
+         area_id,
+         is_delete,
+         create_id,
+         create_time,
+         update_id,
+         update_time,
+         version)
+        values
+        (#{driverCode},
+         #{provinceId},
+         #{cityId},
+         #{areaId},
+         0,
+         #{createId},
+         now(),
+         #{updateId},
+         now(),
+         0)
+    </insert>
+
+    <!--新增司机信息到用户表-->
+    <insert id="addDriverToUser" parameterType="com.xzsd.pc.driver.entity.DriverInfo">
+        insert into t_sys_user
+        (user_code,
+         user_account,
+         user_name,
+         password,
+         image_path,
+         phone,
+         idcard,
+         role,
+         is_delete,
+         create_id,
+         create_time,
+         update_id,
+         update_time,
+         version)
+        values
+        (#{driverCode},
+         #{driverAccount},
+         #{driverName},
+         #{password},
+         #{imagePath},
+         #{phone},
+         #{idCard},
+         2,
+         0,
+         #{createId},
+         now(),
+         #{updateId},
+         now(),
+         0)
+    </insert>
+
+    <!--修改司机信息-->
+    <update id="updateDriver" parameterType="com.xzsd.pc.driver.entity.DriverInfo">
+        update t_sys_driver
+        set
+            province_id = #{provinceId},
+            city_id = #{cityId},
+            area_id = #{areaId},
+            version = version + 1
+        where driver_code = #{driverCode}
+          and version = #{version}
+    </update>
+
+    <!--修改用户表中的司机信息-->
+    <update id="updateDriverToUser" parameterType="com.xzsd.pc.driver.entity.DriverInfo">
+        update t_sys_user
+        set
+            user_account = #{driverAccount},
+            user_name = #{driverName},
+            password = #{password},
+            image_path = #{imagePath},
+            phone = #{phone},
+            idcard = #{idCard},
+            version = version + 1
+        where user_code = #{driverCode}
+          and version = #{version}
+    </update>
+
+    <!--删除司机信息-->
+    <update id="deleteDriver" parameterType="com.xzsd.pc.driver.entity.DriverInfo">
+        update t_sys_driver
+        set
+            is_delete = 1,
+            update_id = #{userId},
+            update_time = now(),
+            version = version + 1
+        where driver_code in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--删除用户表中的司机信息-->
+    <update id="deleteDriverToUser" parameterType="com.xzsd.pc.driver.entity.DriverInfo">
+        update t_sys_user
+        set
+        is_delete = 1,
+        update_id = #{userId},
+        update_time = now(),
+        version = version + 1
+        where user_code in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--查询司机信息详情-->
+    <select id="getDriver" parameterType="java.lang.String" resultType="com.xzsd.pc.driver.entity.DriverDTO">
+        select
+            a.driver_code driverCode,
+            b.user_name driverName,
+            b.image_path imagePath,
+            b.phone phone,
+            b.idcard idCard,
+            b.user_account driverAccount,
+            a.province_id provinceId,
+            c.dictionary_name provinceName,
+            a.city_id cityId,
+            d.dictionary_name cityName,
+            a.area_id areaId,
+            e.dictionary_name areaName,
+            a.version version
+        from t_sys_driver a
+        LEFT JOIN t_sys_user b
+        on a.driver_code = b.user_code
+        LEFT JOIN t_sys_dictionary c
+        on a.province_id = c.dictionary_code
+        LEFT JOIN t_sys_dictionary d
+        on a.city_id = d.dictionary_code
+        LEFT JOIN t_sys_dictionary e
+        on a.area_id = e.dictionary_code
+        where a.driver_code = #{driverCode}
+          and a.is_delete = 0
+    </select>
+
+    <!--查询司机列表信息-->
+    <select id="listDriver" parameterType="com.xzsd.pc.driver.entity.DriverInfo" resultType="com.xzsd.pc.driver.entity.DriverVo">
+        select
+            a.driver_code driverCode,
+            b.user_name driverName,
+            b.phone phone,
+            b.idcard idCard,
+            b.user_account driverAccount
+        from t_sys_driver a,
+             t_sys_user b
+        where a.driver_code = b.user_code
+          and a.is_delete = 0
+        <if test="role == 1">
+            and a.area_id = (select area_id from t_sys_store where user_code = #{userId})
+        </if>
+        <if test="driverCode != null and driverCode != ''">
+            and a.driver_code like concat('%', #{driverCode}, '%')
+        </if>
+        <if test="driverName != null and driverName != ''">
+            and b.user_name like concat('%', #{driverName}, '%')
+        </if>
+        <if test="provinceId != null and provinceId != ''">
+            and a.province_id like concat('%', #{provinceId}, '%')
+        </if>
+        <if test="cityId != null and cityId != ''">
+            and a.city_id like concat('%', #{cityId}, '%')
+        </if>
+        <if test="areaId != null and areaId != ''">
+            and a.area_id like concat('%', #{areaId}, '%')
+        </if>
+    </select>
+</mapper>

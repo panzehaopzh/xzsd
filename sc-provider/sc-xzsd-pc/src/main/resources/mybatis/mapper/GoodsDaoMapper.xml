@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.goods.dao.GoodsDao">
+
+    <!--统计书号数量-->
+    <select id="countISBM" parameterType="com.xzsd.pc.goods.entity.GoodsInfo" resultType="int">
+        select count(ISBM)
+        from t_sys_goods
+        where is_delete = 0
+        and ISBM = #{ISBM}
+        <if test="goodsCode != null and goodsCode != ''">
+            and goods_code != #{goodsCode}
+        </if>
+    </select>
+
+   <!--新增商品-->
+   <insert id="addGoods" parameterType="com.xzsd.pc.goods.entity.GoodsInfo">
+      insert into t_sys_goods
+      (goods_code,
+       goods_name,
+       ISBM,
+       first_sort_id,
+       second_sort_id,
+       advert,
+       introduce,
+       business_name,
+       press,
+       author,
+       stock,
+       fix_price,
+       selling_price,
+       goods_image,
+       is_delete,
+       create_id,
+       create_time,
+       update_id,
+       update_time,
+       version)
+      values
+       (#{goodsCode},
+        #{goodsName},
+        #{ISBM},
+        #{firstSortId},
+        #{secondSortId},
+        #{advert},
+        #{introduce},
+        #{businessName},
+        #{press},
+        #{author},
+        #{stock},
+        #{fixPrice},
+        #{sellingPrice},
+        #{goodsImage},
+        0,
+        #{createId},
+        now(),
+        #{updateId},
+        now(),
+        0)
+   </insert>
+
+    <!--查询在轮播图和热门商品的商品编号-->
+    <select id="listHotChart" parameterType="java.lang.String" resultType="java.lang.String">
+        select distinct
+        goods_code
+        from t_sys_goods
+        where is_delete = 0
+        and goods_code in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and (goods_code in
+        (select goods_code from t_hot_goods where is_delete = 0)
+        or goods_code in
+        (select goods_code from t_rotation_chart where is_delete = 0))
+    </select>
+
+    <!--查询在轮播图和热门商品的商品名称-->
+    <select id="listGoodsName" parameterType="java.lang.String" resultType="java.lang.String">
+        select distinct
+        goods_name
+        from t_sys_goods
+        where is_delete = 0
+        and goods_code in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and (goods_code in
+        (select goods_code from t_hot_goods where is_delete = 0)
+        or goods_code in
+        (select goods_code from t_rotation_chart where is_delete = 0))
+    </select>
+
+    <!--删除商品-->
+    <update id="deleteGoods" parameterType="java.lang.String">
+        update t_sys_goods
+        set
+            is_delete = 1,
+            update_id = #{userId},
+            update_time = now(),
+            version = version + 1
+        where goods_code in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--修改商品信息-->
+    <update id="updateGoods" parameterType="com.xzsd.pc.goods.entity.GoodsInfo">
+        update t_sys_goods
+        set
+            goods_name = #{goodsName},
+            ISBM = #{ISBM},
+            first_sort_id = #{firstSortId},
+            second_sort_id = #{secondSortId},
+            advert = #{advert},
+            introduce = #{introduce},
+            business_name = #{businessName},
+            press = #{press},
+            author = #{author},
+            stock = #{stock},
+            fix_price = #{fixPrice},
+            selling_price = #{sellingPrice},
+            goods_image = #{goodsImage},
+            update_id = #{updateId},
+            update_time = now(),
+            version = version + 1
+        where goods_code = #{goodsCode}
+          and version = #{version}
+    </update>
+
+   <!--商品列表-->
+   <select id="listGoods" parameterType="com.xzsd.pc.goods.entity.GoodsInfo" resultType="com.xzsd.pc.goods.entity.GoodsInfo">
+        select
+            a.goods_code goodsCode,
+            a.goods_name goodsName,
+            a.fix_price fixPrice,
+            a.selling_price sellingPrice,
+            a.sales_volume salesVolume,
+            a.first_sort_id firstSortId,
+            b.sort_name firstSortName,
+            a.second_sort_id secondSortId,
+            c.sort_name secondSortName,
+            a.advert advert,
+            a.introduce introduce,
+            a.goods_state goodsState,
+            a.shelf_time shelfTime,
+            a.pageview pageview,
+            a.business_name businessName,
+            a.stock stock,
+            a.ISBM ISBM,
+            a.press press,
+            a.author author,
+            a.goods_image goodsImage,
+            a.version version
+        from t_sys_goods a
+        LEFT JOIN t_goods_sort b
+        on a.first_sort_id = b.sort_code
+        LEFT JOIN t_goods_sort c
+        on a.second_sort_id = c.sort_code
+        where a.is_delete = 0
+        <if test="goodsName != null and goodsName != ''">
+            and a.goods_name like concat('%', #{goodsName}, '%')
+        </if>
+        <if test="goodsState != null and goodsState != ''">
+            and a.goods_state like concat('%', #{goodsState}, '%')
+        </if>
+        <if test="advert != null and advert != ''">
+            and a.advert like concat('%', #{advert}, '%')
+        </if>
+        <if test="press != null and press != ''">
+            and a.press like concat('%', #{press}, '%')
+        </if>
+        <if test="author != null and author != ''">
+            and a.author like concat('%', #{author}, '%')
+        </if>
+        order by a.create_time desc
+   </select>
+
+    <!--获取商品信息-->
+    <select id="getGoods" parameterType="java.lang.String" resultType="com.xzsd.pc.goods.entity.GoodsInfo">
+        select
+            a.goods_code goodsCode,
+            a.goods_name goodsName,
+            a.fix_price fixPrice,
+            a.selling_price sellingPrice,
+            a.sales_volume salesVolume,
+            a.first_sort_id firstSortId,
+            b.sort_name firstSortName,
+            a.second_sort_id secondSortId,
+            c.sort_name secondSortName,
+            a.advert advert,
+            a.introduce introduce,
+            a.goods_state goodsState,
+            a.shelf_time shelfTime,
+            a.pageview pageview,
+            a.business_name businessName,
+            a.stock stock,
+            a.ISBM ISBM,
+            a.press press,
+            a.author author,
+            a.goods_image goodsImage,
+            a.version version
+        from t_sys_goods a
+        LEFT JOIN t_goods_sort b
+        on a.first_sort_id = b.sort_code
+        LEFT JOIN t_goods_sort c
+        on a.second_sort_id = c.sort_code
+        where a.goods_code = #{goodsCode}
+        and a.is_delete = 0
+    </select>
+
+    <!--商品上架下架修改-->
+    <update id="updateGoodsState" parameterType="java.lang.String">
+        update t_sys_goods
+        set
+            goods_state = #{goodsState},
+            update_id = #{userId},
+            update_time = now(),
+        <if test="goodsState == 0 ">
+            shelf_time = now(),
+        </if>
+            version = version + 1
+        where goods_code in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--查询商品分类下拉框-->
+    <select id="listSort" parameterType="java.lang.String" resultType="com.xzsd.pc.goods.entity.SortInfo">
+        select
+            sort_code sortId,
+            sort_name sortName
+        from t_goods_sort
+        where parent_code = #{sortId}
+          and is_delete = 0
+    </select>
+
+</mapper>

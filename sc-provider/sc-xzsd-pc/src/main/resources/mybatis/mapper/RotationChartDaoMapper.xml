@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.rotationChart.dao.RotationChartDao">
+
+    <!--统计轮播图商品编号和序号-->
+    <select id="countGoodsCode" parameterType="com.xzsd.pc.rotationChart.entity.RotationChartInfo" resultType="int">
+        select count(goods_code)
+        from t_rotation_chart
+        where is_delete = 0
+          and goods_code = #{goodsCode}
+           or sort = #{sort}
+    </select>
+
+    <!--新增轮播图-->
+    <insert id="addRotationChart" parameterType="com.xzsd.pc.rotationChart.entity.RotationChartInfo">
+        insert into t_rotation_chart
+        (chart_code,
+         sort,
+         chart_image,
+         chart_state,
+         goods_code,
+         term_validity_begin,
+         term_validity_end,
+         is_delete,
+         create_id,
+         create_time,
+         update_id,
+         update_time,
+         version)
+        values
+        (#{chartId},
+         #{sort},
+         #{chartImage},
+         #{chartState},
+         #{goodsCode},
+         #{termValidityBegin},
+         #{termValidityEnd},
+         0,
+         #{createId},
+         now(),
+         #{updateId},
+         now(),
+         0)
+    </insert>
+
+    <!--查询轮播图商品列表-->
+    <select id="listRotationGoods" parameterType="com.xzsd.pc.rotationChart.entity.RotationGoodsVo" resultType="com.xzsd.pc.rotationChart.entity.RotationGoodsVo">
+        select
+            a.goods_code goodsCode,
+            a.goods_name goodsName,
+            a.goods_state goodsState,
+            a.first_sort_id firstSortId,
+            b.sort_name firstSortName,
+            a.second_sort_id secondSortId,
+            c.sort_name secondSortName
+        from t_sys_goods a
+        LEFT JOIN t_goods_sort b
+        on a.first_sort_id = b.sort_code
+        LEFT JOIN t_goods_sort c
+        on a.second_sort_id = c.sort_code
+        where is_delete = 0
+          and goods_state = 0
+        <if test="goodsName != null and goodsName != ''">
+            and goods_name like concat('%', #{goodsName}, '%')
+        </if>
+        <if test="goodsCode != null and goodsCode != ''">
+            and goods_code like concat('%', #{goodsCode}, '%')
+        </if>
+    </select>
+
+    <!--删除轮播图-->
+    <update id="deleteRotationChart" parameterType="com.xzsd.pc.rotationChart.entity.RotationChartInfo">
+        update t_rotation_chart
+        set
+            is_delete = 1,
+            update_id = #{userId},
+            update_time = now(),
+            version = version + 1
+        where chart_code in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--查询轮播图状态列表-->
+    <select id="listRotationChartState" parameterType="com.xzsd.pc.rotationChart.entity.RotationChartInfo" resultType="com.xzsd.pc.rotationChart.entity.RotationChartInfo">
+        select
+            chart_code chartId,
+            sort sort,
+            chart_image chartImage,
+            chart_state chartState,
+            goods_code goodsCode,
+            term_validity_begin termValidityBegin,
+            term_validity_end termValidityEnd,
+            version version
+        from t_rotation_chart
+        where is_delete = 0
+        <if test="chartState != null and chartState != ''">
+            and chart_state = #{chartState}
+        </if>
+    </select>
+
+    <!--轮播图状态修改-->
+    <update id="updateRotationChartState" parameterType="com.xzsd.pc.rotationChart.entity.RotationChartInfo">
+        update t_rotation_chart
+        set
+            chart_state = #{chartState},
+            update_id = #{updateId},
+            update_time = now(),
+            version = version + 1
+        where chart_code = #{chartId}
+          and version = #{version}
+    </update>
+</mapper>

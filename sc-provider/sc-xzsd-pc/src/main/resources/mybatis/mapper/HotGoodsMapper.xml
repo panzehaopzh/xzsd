@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.hotGoods.dao.HotGoodsDao">
+
+    <!--统计热门位商品编号和热门位排序-->
+    <select id="countHotGoods" parameterType="com.xzsd.pc.hotGoods.entity.HotGoodsInfo" resultType="int">
+        select count(hot_id)
+        from t_hot_goods
+        where is_delete = 0
+        and (goods_code = #{goodsCode}
+         or hot_sort = #{hotSort})
+        <if test="hotId != null and hotId != ''">
+            and hot_id != #{hotId}
+        </if>
+    </select>
+
+    <!--新增热门位商品-->
+    <insert id="addHotGoods" parameterType="com.xzsd.pc.hotGoods.entity.HotGoodsInfo">
+        insert into t_hot_goods
+        (hot_id,
+         hot_sort,
+         goods_code,
+         is_delete,
+         create_id,
+         create_time,
+         update_id,
+         update_time,
+         version)
+        values
+         (#{hotId},
+          #{hotSort},
+          #{goodsCode},
+          0,
+          #{createId},
+          now(),
+          #{updateId},
+          now(),
+          0)
+    </insert>
+
+    <!--修改热门位商品-->
+    <update id="updateHotGoods" parameterType="com.xzsd.pc.hotGoods.entity.HotGoodsInfo">
+        update t_hot_goods
+        set
+            hot_sort = #{hotSort},
+            goods_code = #{goodsCode},
+            update_id = #{updateId},
+            update_time = now(),
+            version = version + 1
+        where hot_id = #{hotId}
+          and version = #{version}
+    </update>
+
+    <!--删除热门位商品-->
+    <update id="deleteHotGoods" parameterType="com.xzsd.pc.hotGoods.entity.HotGoodsInfo">
+        update t_hot_goods
+        set
+            is_delete = 1,
+            update_id = #{userId},
+            update_time = now(),
+            version = version + 1
+        where hot_id in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--查询热门位商品详情-->
+    <select id="getHotGoods" parameterType="java.lang.String" resultType="com.xzsd.pc.hotGoods.entity.HotGoodsInfo">
+        select
+            hot_id hotId,
+            hot_sort hotSort,
+            goods_code goodsCode,
+            version version
+        from t_hot_goods
+        where hot_id = #{hotId}
+          and is_delete = 0
+    </select>
+
+    <!--查询热门位商品列表-->
+    <select id="listHotGoods" parameterType="com.xzsd.pc.hotGoods.entity.HotGoodsInfo" resultType="com.xzsd.pc.hotGoods.entity.HotGoodsVo">
+        select
+            a.hot_id hotId,
+            a.hot_sort hotSort,
+            a.goods_code goodsCode,
+            b.goods_name goodsName,
+            b.selling_price sellingPrice,
+            b.introduce introduce
+        from t_hot_goods a,
+             t_sys_goods b
+        where a.goods_code = b.goods_code
+          and a.is_delete = 0
+        <if test="goodsName != null and goodsName != ''">
+            and goods_name like concat('%', #{goodsName}, '%')
+        </if>
+        <if test="goodsCode != null and goodsCode != ''">
+            and a.goods_code like concat('%', #{goodsCode}, '%')
+        </if>
+        order by hot_sort
+    </select>
+
+    <!--查询展示数量-->
+    <select id="getHotGoodsNum" resultType="int">
+        select
+            dictionary_value hotGoodsNum
+        from t_sys_dictionary
+        where dictionary_name = 'hotGoodsNum'
+    </select>
+
+    <!--修改展示数量-->
+    <update id="updateHotGoodsNum" parameterType="int">
+        update t_sys_dictionary
+        set
+            dictionary_value = #{hotGoodsNum},
+            version = version + 1
+        where dictionary_name = 'hotGoodsNum'
+    </update>
+</mapper>

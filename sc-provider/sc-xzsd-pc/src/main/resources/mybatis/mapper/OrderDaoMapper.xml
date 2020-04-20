@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.order.dao.OrderDao">
+
+    <!--查询订单详情-->
+    <select id="getListOrder" parameterType="java.lang.String" resultType="com.xzsd.pc.order.entity.OrderDetailInfo">
+        select
+            a.user_code userCode,
+            a.order_code orderCode,
+            a.goods_code goodsCode,
+            b.goods_name goodsName,
+            a.buy_num buyNum,
+            a.total_num totalNum,
+            b.selling_price sellingPrice,
+            b.fix_price fixPrice
+        from t_order_detail a,
+             t_sys_goods b
+        where a.goods_code = b.goods_code
+          and a.order_code = #{orderCode}
+          and a.is_delete = 0
+    </select>
+
+    <!--查询订单列表-->
+    <select id="listOrder" parameterType="com.xzsd.pc.order.entity.OrderInfo" resultType="com.xzsd.pc.order.entity.OrderVo">
+        select
+            a.order_code orderCode,
+            a.order_amount orderAmount,
+            a.order_state orderState,
+            a.store_id storeId,
+            b.user_name userName,
+            b.phone phone,
+            a.create_time orderTime
+        from t_sys_order a,
+             t_sys_user b
+        where a.create_id = b.user_code
+          and a.is_delete = 0
+        <if test="userName != null and userName != ''">
+            and b.user_name like concat('%', #{userName}, '%')
+        </if>
+        <if test="orderCode != null and orderCode != ''">
+            and a.order_code like concat('%', #{orderCode}, '%')
+        </if>
+        <if test="phone != null and phone != ''">
+            and b.phone like concat('%', #{phone}, '%')
+        </if>
+        <if test="orderState != null and orderState != ''">
+            and a.order_state = #{orderState}
+        </if>
+        <if test="payTimeBegin != null and payTimeBegin != ''">
+            and a.create_time >= DATE_FORMAT(#{payTimeBegin},'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="payTimeEnd != null and payTimeEnd != ''">
+            and a.create_time &lt;= DATE_FORMAT(#{payTimeEnd},'%Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="role == 1">
+            and b.user_code in
+            (select
+                t1.user_code
+             from t_sys_customer t1,
+                  t_sys_store t2
+             where t1.invite_code = t2.invite_code
+               and t2.user_code = #{userId}
+               and t1.is_delete = 0)
+        </if>
+        order by a.create_time
+    </select>
+
+    <!--修改订单状态-->
+    <update id="updateOrderState" parameterType="java.lang.String">
+        update t_sys_order
+        set
+            order_state = #{orderState},
+            update_id = #{userId},
+            update_time = now(),
+            version = version + 1
+        where order_code in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>

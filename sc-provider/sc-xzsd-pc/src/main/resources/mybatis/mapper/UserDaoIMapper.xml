@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.user.dao.UserDao">
+
+    <!--统计用户账号数量-->
+    <select id="countUserAcct" parameterType="com.xzsd.pc.user.entity.UserInfo" resultType="int">
+        select count(user_code)
+        from t_sys_user
+        where is_delete = 0
+        and (user_account = #{userAccount}
+         or phone = #{phone})
+        <if test="userCode != null and userCode != ''">
+            and user_code != #{userCode}
+        </if>
+    </select>
+
+    <!--根据id获取角色-->
+    <select id="getRoleById" parameterType="java.lang.String" resultType="java.lang.String">
+        select role
+        from t_sys_user
+        where user_code = #{userId}
+          and is_delete = 0
+    </select>
+
+    <!--新增用户-->
+    <insert id="addUser" parameterType="com.xzsd.pc.user.entity.UserInfo">
+        insert into t_sys_user
+        (user_code,
+         user_account,
+         user_name,
+         password,
+         image_path,
+         sex,
+         phone,
+         email,
+         idcard,
+         role,
+         is_delete,
+         create_id,
+         create_time,
+         update_id,
+         update_time,
+         version)
+         values
+            (#{userCode},
+            #{userAccount},
+            #{userName},
+            #{password},
+            #{imagePath},
+            #{sex},
+            #{phone},
+            #{email},
+            #{idCard},
+            #{role},
+            0,
+            #{createId},
+            now(),
+            #{updateId},
+            now(),
+            0)
+    </insert>
+
+    <!--删除用户-->
+    <update id="deleteUser" parameterType="com.xzsd.pc.user.entity.UserInfo">
+        update t_sys_user
+        set
+            is_delete = 1,
+            update_id = #{userId},
+            update_time = now(),
+            version = version + 1
+        where user_code in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--修改用户信息-->
+    <update id="updateUser" parameterType="com.xzsd.pc.user.entity.UserInfo">
+        update t_sys_user
+        set
+            user_account = #{userAccount},
+            user_name = #{userName},
+            password = #{password},
+            image_path = #{imagePath},
+            sex = #{sex},
+            phone = #{phone},
+            email = #{email},
+            idcard = #{idCard},
+            role = #{role},
+            update_id = #{updateId},
+            update_time = now(),
+            version = version + 1
+        where user_code = #{userCode}
+          and version = #{version}
+    </update>
+
+    <!--用户列表-->
+    <select id="listUsers" parameterType="com.xzsd.pc.user.entity.UserInfo" resultType="com.xzsd.pc.user.entity.UserVo">
+        select
+            user_code userCode,
+            user_account userAccount,
+            user_name userName,
+            sex sex,
+            phone phone,
+            email email,
+            idcard idCard,
+            role role
+        from t_sys_user
+        where is_delete = 0
+        <if test="userAccount != null and userAccount != ''">
+            and user_account like concat('%', #{userAccount}, '%')
+        </if>
+        <if test="userName != null and userName != ''">
+            and user_name like concat('%', #{userName}, '%')
+        </if>
+        <if test="role != null and role != ''">
+            and role = #{role}
+        </if>
+        order by create_time
+    </select>
+
+    <!--获取用户信息-->
+    <select id="getUser" parameterType="java.lang.String" resultType="com.xzsd.pc.user.entity.UserInfo">
+        select
+            user_code userCode,
+            user_account userAccount,
+            user_name userName,
+            password password,
+            image_path imagePath,
+            sex sex,
+            phone phone,
+            email email,
+            idcard idCard,
+            role role,
+            version version
+        from t_sys_user
+        where user_code = #{userCode}
+        and is_delete = 0
+    </select>
+</mapper>

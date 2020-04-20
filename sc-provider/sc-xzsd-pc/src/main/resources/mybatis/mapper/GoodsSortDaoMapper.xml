@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.goodsSort.dao.GoodsSortDao">
+
+    <resultMap id="firstSort" type="com.xzsd.pc.goodsSort.entity.FirstSort">
+        <id column="sort_code" property="firstSortId"/>
+        <result column="sort_name" property="firstSortName"/>
+        <result column="version" property="version"/>
+        <collection property="secondSortList" ofType="com.xzsd.pc.goodsSort.entity.SecondSort">
+            <id column="secondSortCode" property="secondSortId"/>
+            <result column="secondSortName" property="secondSortName"/>
+            <result column="version2" property="version"/>
+        </collection>
+    </resultMap>
+    
+    <!--新增商品分类-->
+    <insert id="addGoodsSort" parameterType="com.xzsd.pc.goodsSort.entity.GoodsSortInfo">
+        insert into t_goods_sort
+        (sort_code,
+         sort_name,
+         parent_code,
+         sort_remark,
+         is_delete,
+         create_id,
+         create_time,
+         update_id,
+         update_time,
+         version)
+         values
+            (#{sortId},
+             #{sortName},
+             #{parentCode},
+             #{sortRemark},
+             0,
+             #{createId},
+             now(),
+             #{updateId},
+             now(),
+             0)
+    </insert>
+
+    <!--修改商品分类-->
+    <update id="updateGoodsSort" parameterType="com.xzsd.pc.goodsSort.entity.GoodsSortInfo">
+        update t_goods_sort
+        set
+            sort_name = #{sortName},
+            sort_remark = #{sortRemark},
+            update_id = #{updateId},
+            update_time = now(),
+            version = version + 1
+        where sort_code = #{sortId}
+          and version = #{version}
+    </update>
+
+    <!--删除商品分类-->
+    <update id="deleteGoodsSort" parameterType="com.xzsd.pc.goodsSort.entity.GoodsSortInfo">
+        update t_goods_sort
+        set
+            is_delete = 1,
+            update_id = #{userId},
+            update_time = now(),
+            version = version + 1
+        where sort_code in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--商品分类列表-->
+    <select id="listGoodsSort" resultMap="firstSort">
+        select
+            t1.sort_code,
+            t1.sort_name,
+            t1.version,
+            t2.sort_code secondSortCode,
+            t2.sort_name secondSortName,
+            t2.version version2
+        from t_goods_sort t1,
+             t_goods_sort t2
+        where t1.is_delete = 0
+          and t1.sort_code = t2.parent_code
+        order by t1.create_time
+    </select>
+
+    <!--获取商品分类信息-->
+    <select id="getGoodsSort" parameterType="java.lang.String" resultType="com.xzsd.pc.goodsSort.entity.GoodsSortInfo">
+        select
+            sort_code sortId,
+            sort_name sortName,
+            parent_code parentCode,
+            sort_remark sortRemark,
+            version version
+        from t_goods_sort
+        where sort_code = #{sortId}
+          and is_delete = 0
+    </select>
+</mapper>
