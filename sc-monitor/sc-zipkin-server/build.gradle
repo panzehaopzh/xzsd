@@ -1,4 +1,0 @@
-dependencies {
-    compile 'io.zipkin.java:zipkin-server',
-            'io.zipkin.java:zipkin-autoconfigure-ui'
-}
