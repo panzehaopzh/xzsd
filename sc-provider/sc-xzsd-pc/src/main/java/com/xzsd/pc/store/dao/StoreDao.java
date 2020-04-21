@@ -40,6 +40,13 @@ public interface StoreDao {
     int countBusiness(StoreInfo storeInfo);
 
     /**
+     * 检验邀请码是否存在
+     * @param inviteCode
+     * @return
+     */
+    int countInviteCode(@Param("inviteCode") String inviteCode);
+
+    /**
      * 新增门店
      * @param storeInfo
      * @return

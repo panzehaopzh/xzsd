@@ -58,7 +58,17 @@ public class StoreService {
             return AppResponse.bizError("该营业执照编码已存在，请重新输入！");
         }
         storeInfo.setStoreId(StringUtil.getCommonCode(2));
-        storeInfo.setInviteCode(StringUtil.getInviteCode());
+        //生成邀请码
+        String inviteCode = StringUtil.getInviteCode();
+        //判断邀请码是否重复
+        while(inviteCode != null){
+            int countInviteCode = storeDao.countInviteCode(inviteCode);
+            if(0 == countInviteCode){
+                storeInfo.setInviteCode(inviteCode);
+                break;
+            }
+            inviteCode = StringUtil.getInviteCode();
+        }
         ///新增门店
         int count = storeDao.addStore(storeInfo);
         if(0 == count){

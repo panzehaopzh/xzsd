@@ -107,6 +107,8 @@
             role role
         from t_sys_user
         where is_delete = 0
+        and (role = 0
+        or role = 1)
         <if test="userAccount != null and userAccount != ''">
             and user_account like concat('%', #{userAccount}, '%')
         </if>

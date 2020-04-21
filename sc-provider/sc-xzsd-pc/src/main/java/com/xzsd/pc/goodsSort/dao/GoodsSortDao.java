@@ -30,12 +30,26 @@ public interface GoodsSortDao {
     int updateGoodsSort(GoodsSortInfo goodsSortInfo);
 
     /**
+     * 查询商品分类是否有子分类
+     * @param sortId 选中的商品分类编号
+     * @return
+     */
+    int countSubcategory(@Param("sortId") String sortId);
+
+    /**
+     * 查询商品分类是否有商品
+     * @param sortId 选中的商品分类编号
+     * @return
+     */
+    int countGoods(@Param("sortId") String sortId);
+
+    /**
      * 删除商品分类
-     * @param listCode 选中的商品分类编号集合
+     * @param sortId 选中的商品分类编号
      * @param userId 更新人
      * @return
      */
-    int deleteGoodsSort(@Param("listCode") List<String> listCode, @Param("userId") String userId);
+    int deleteGoodsSort(@Param("sortId") String sortId, @Param("userId") String userId);
 
     /**
      * 获取所有商品分类信息

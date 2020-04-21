@@ -73,8 +73,17 @@ public class GoodsSortService {
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteGoodsSort(String sortId,String userId){
-        List<String> listCode = Arrays.asList(sortId.split(","));
-        int count = goodsSortDao.deleteGoodsSort(listCode,userId);
+        //查询商品分类是否有子分类
+        int countSubcategory = goodsSortDao.countSubcategory(sortId);
+        if(0 != countSubcategory){
+            return AppResponse.bizError("所选商品分类已有子分类，无法删除，请重新选择！");
+        }
+        //查询商品分类是否有商品
+        int countGoods = goodsSortDao.countGoods(sortId);
+        if(0 != countGoods){
+            return AppResponse.bizError("所选商品分类已有商品存在，无法删除，请重新选择！");
+        }
+        int count = goodsSortDao.deleteGoodsSort(sortId,userId);
         if(0 == count){
             return AppResponse.versionError("删除失败，请重试！");
         }

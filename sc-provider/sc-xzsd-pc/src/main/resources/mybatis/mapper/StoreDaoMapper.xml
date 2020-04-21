@@ -33,6 +33,14 @@
         </if>
     </select>
 
+    <!--检验邀请码是否存在-->
+    <select id="countInviteCode" parameterType="java.lang.String" resultType="int">
+        select count(store_id)
+        from t_sys_store
+        where is_delete = 0
+        and invite_code = #{inviteCode}
+    </select>
+
     <!--新增门店-->
     <insert id="addStore" parameterType="com.xzsd.pc.store.entity.StoreInfo">
         insert into t_sys_store

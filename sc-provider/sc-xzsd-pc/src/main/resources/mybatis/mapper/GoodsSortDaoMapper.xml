@@ -52,6 +52,23 @@
           and version = #{version}
     </update>
 
+    <!--查询商品分类是否有子分类-->
+    <select id="countSubcategory" parameterType="java.lang.String" resultType="int">
+        select count(sort_code)
+        from t_goods_sort
+        where parent_code = #{sortId}
+        and is_delete = 0
+    </select>
+
+    <!--查询商品分类是否有商品-->
+    <select id="countGoods" parameterType="java.lang.String" resultType="int">
+        select count(goods_code)
+        from t_sys_goods
+        where is_delete = 0
+        and first_sort_id = #{sortId}
+        or second_sort_id = #{sortId}
+    </select>
+
     <!--删除商品分类-->
     <update id="deleteGoodsSort" parameterType="com.xzsd.pc.goodsSort.entity.GoodsSortInfo">
         update t_goods_sort

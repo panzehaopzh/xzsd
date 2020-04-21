@@ -56,7 +56,7 @@ public class DriverService {
         //新增用户表司机信息
         int count2 = driverDao.addDriverToUser(driverInfo);
         if(0 == count1 || 0 == count2){
-            return AppResponse.bizError("新增失败，请重试！");
+            return AppResponse.versionError("新增失败，请重试！");
         }
         return AppResponse.success("新增成功！");
     }
@@ -83,7 +83,7 @@ public class DriverService {
         //修改用户表司机信息
         int count2 = driverDao.updateDriverToUser(driverInfo);
         if(0 == count1 || 0 == count2){
-            return AppResponse.bizError("修改失败，请重试！");
+            return AppResponse.versionError("修改失败，请重试！");
         }
         return AppResponse.success("修改成功！");
     }
@@ -104,7 +104,7 @@ public class DriverService {
         //删除用户表司机信息
         int count2 = driverDao.deleteDriverToUser(listCode,userId);
         if(0 == count1 || 0 == count2){
-            return AppResponse.bizError("删除失败，请重试！");
+            return AppResponse.versionError("删除失败，请重试！");
         }
         return AppResponse.success("删除成功！");
     }

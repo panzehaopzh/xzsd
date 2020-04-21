@@ -70,12 +70,12 @@ public class GoodsService {
         //查询选中的商品编号中在轮播图和热门商品的商品名称
         List<String> goodsNameList = goodsDao.listGoodsName(goodsCodeList);
         if(listGoodsCode.size() == 0){
-            return AppResponse.bizError("删除失败，商品" + goodsNameList +"都处于轮播图或热门商品上，无法删除！");
+            return AppResponse.versionError("删除失败，商品" + goodsNameList +"都处于轮播图或热门商品上，无法删除！");
         }
         //删除商品
         int count = goodsDao.deleteGoods(listGoodsCode,userId);
         if (0 == count){
-            return AppResponse.bizError("删除失败，请重试！");
+            return AppResponse.versionError("删除失败，请重试！");
         }
         if(goodsCodeList.size() != 0 && listGoodsCode.size() != 0){;
             return AppResponse.success("部分商品删除成功，商品" + goodsNameList + "正处于轮播图或热门商品上，无法删除！");

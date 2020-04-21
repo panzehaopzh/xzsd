@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.userInformation.dao.UserInformationDao">
+
+    <!--查询个人信息-->
+    <select id="getUser" parameterType="java.lang.String" resultType="com.xzsd.app.userInformation.entity.UserInfo">
+        select
+            t1.user_name userName,
+            t1.image_path userImage,
+            t1.role role,
+            t2.store_id storeId,
+            t2.store_name storeName,
+            t2.invite_code inviteCode,
+            t1.phone phone,
+            t1.version version,
+            (select
+            CONCAT_WS('-',b.dictionary_name,c.dictionary_name,d.dictionary_name,a.address)
+            FROM
+                t_sys_store a
+            LEFT JOIN t_sys_dictionary b
+            ON a.province_id = b.dictionary_code
+            LEFT JOIN t_sys_dictionary c
+            ON a.city_id = c.dictionary_code
+            LEFT JOIN t_sys_dictionary d
+            ON a.area_id = d.dictionary_code
+            where a.is_delete = 0
+            and a.user_code = #{userId}) address
+        from t_sys_user t1
+        LEFT JOIN t_sys_store t2
+        ON t1.user_code = t2.user_code
+        where t1.is_delete = 0
+        and t1.user_code = #{userId}
+    </select>
+</mapper>

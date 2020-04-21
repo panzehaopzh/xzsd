@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.register.dao.RegisterDao">
+
+    <!--检验用户名，手机号和身份证是否已存在-->
+    <select id="countRegister" parameterType="com.xzsd.app.register.entity.RegisterInfo" resultType="int">
+        select count(user_code)
+        from t_sys_user
+        where is_delete = 0
+        and user_account = #{userAccount}
+        or phone = #{phone}
+        or idcard = #{idCard}
+    </select>
+
+    <!--注册用户-->
+    <insert id="clientRegister" parameterType="com.xzsd.app.register.entity.RegisterInfo">
+        insert into t_sys_user
+        (user_code,
+         user_account,
+         user_name,
+         password,
+         image_path,
+         sex,
+         phone,
+         email,
+         idcard,
+         role,
+         is_delete,
+         create_id,
+         create_time,
+         update_id,
+         update_time,
+         version)
+        values
+            (#{userCode},
+             #{userAccount},
+             #{userName},
+             #{password},
+             #{imagePath},
+             #{sex},
+             #{phone},
+             #{email},
+             #{idCard},
+             3,
+             0,
+             #{userCode},
+             now(),
+             #{updateId},
+             now(),
+             0)
+    </insert>
+
+    <!--新增用户到客户表-->
+    <insert id="addCustomer" parameterType="com.xzsd.app.register.entity.RegisterInfo">
+        insert into t_sys_customer
+        (user_code,
+         invite_code,
+         is_delete,
+         create_id,
+         create_time,
+         update_id,
+         update_time,
+         version)
+         values
+            (#{userCode},
+             #{inviteCode},
+             0,
+             #{userCode},
+             now(),
+             #{updateId},
+             now(),
+             0)
+    </insert>
+</mapper>
