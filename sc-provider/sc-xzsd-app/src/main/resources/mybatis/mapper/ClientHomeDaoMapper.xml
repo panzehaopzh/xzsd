@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.clientHome.dao.ClientHomeDao">
+
+    <!--查询首页轮播图-->
+    <select id="listRotationChartHome" resultType="com.xzsd.app.clientHome.entity.SlideshowInfo">
+        select
+            chart_image slideshowPath,
+            goods_code goodsCode
+        from t_rotation_chart
+        where is_delete = 0
+        and chart_state = 0
+        and term_validity_end >= now()
+        order by sort
+    </select>
+
+    <!--查询首页热门商品展示数量-->
+    <select id="getHotGoodsNum"  resultType="int">
+        select
+            dictionary_value hotGoodsNum
+        from t_sys_dictionary
+        where dictionary_name = 'hotGoodsNum'
+    </select>
+
+    <!--查询首页热门商品-->
+    <select id="listHotGoods" parameterType="int" resultType="com.xzsd.app.clientHome.entity.HotGoodsInfo">
+        select
+            t1.goods_code goodsCode,
+            t2.goods_name goodsName,
+            t2.goods_image goodsImagePath,
+            t2.selling_price goodsPrice
+        from t_hot_goods t1
+        LEFT JOIN t_sys_goods t2
+        ON t1.goods_code = t2.goods_code
+        where t1.is_delete = 0
+        order by t1.hot_sort ASC LIMIT #{hotGoodsNum}
+    </select>
+</mapper>

@@ -2,33 +2,115 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.xzsd.app.userInformation.dao.UserInformationDao">
 
+
+    <!--查询登录用户的角色-->
+    <select id="getUserRole" parameterType="java.lang.String" resultType="java.lang.String">
+        select
+            role
+        from t_sys_user
+        where is_delete = 0
+        and user_code = #{userId}
+    </select>
+
     <!--查询个人信息-->
     <select id="getUser" parameterType="java.lang.String" resultType="com.xzsd.app.userInformation.entity.UserInfo">
         select
-            t1.user_name userName,
-            t1.image_path userImage,
-            t1.role role,
-            t2.store_id storeId,
-            t2.store_name storeName,
-            t2.invite_code inviteCode,
-            t1.phone phone,
-            t1.version version,
-            (select
-            CONCAT_WS('-',b.dictionary_name,c.dictionary_name,d.dictionary_name,a.address)
-            FROM
+            t.user_name userName,
+            t.image_path userImage,
+            t.role role,
+            <if test="role == 1">
+                (select store_id
+                 from t_sys_store
+                 where is_delete = 0
+                 and user_code = #{userId}) storeId,
+                (select store_name
+                 from t_sys_store
+                 where is_delete = 0
+                 and user_code = #{userId}) storeName,
+                (select invite_code
+                 from t_sys_store
+                 where is_delete = 0
+                 and user_code = #{userId}) inviteCode,
+                (select
+                CONCAT_WS('-',b.dictionary_name,c.dictionary_name,d.dictionary_name,a.address)
+                FROM
                 t_sys_store a
-            LEFT JOIN t_sys_dictionary b
-            ON a.province_id = b.dictionary_code
-            LEFT JOIN t_sys_dictionary c
-            ON a.city_id = c.dictionary_code
-            LEFT JOIN t_sys_dictionary d
-            ON a.area_id = d.dictionary_code
-            where a.is_delete = 0
-            and a.user_code = #{userId}) address
-        from t_sys_user t1
-        LEFT JOIN t_sys_store t2
-        ON t1.user_code = t2.user_code
-        where t1.is_delete = 0
-        and t1.user_code = #{userId}
+                LEFT JOIN t_sys_dictionary b
+                ON a.province_id = b.dictionary_code
+                LEFT JOIN t_sys_dictionary c
+                ON a.city_id = c.dictionary_code
+                LEFT JOIN t_sys_dictionary d
+                ON a.area_id = d.dictionary_code
+                where a.is_delete = 0
+                and a.user_code = #{userId}) address,
+            </if>
+            <if test="role == 3">
+                (select t1.store_id
+                 from t_sys_store t1
+                 LEFT JOIN t_sys_customer t2
+                 ON t1.invite_code = t2.invite_code
+                 where t2.is_delete = 0
+                 and t2.user_code = #{userId}) storeId,
+                (select t1.store_name
+                 from t_sys_store t1
+                 LEFT JOIN t_sys_customer t2
+                 ON t1.invite_code = t2.invite_code
+                 where t2.is_delete = 0
+                 and t2.user_code = #{userId}) storeName,
+                (select t1.invite_code
+                 from t_sys_store t1
+                 LEFT JOIN t_sys_customer t2
+                 ON t1.invite_code = t2.invite_code
+                 where t2.is_delete = 0
+                 and t2.user_code = #{userId}) inviteCode,
+                (select
+                CONCAT_WS('-',b.dictionary_name,c.dictionary_name,d.dictionary_name,a.address)
+                FROM
+                t_sys_store a
+                LEFT JOIN t_sys_dictionary b
+                ON a.province_id = b.dictionary_code
+                LEFT JOIN t_sys_dictionary c
+                ON a.city_id = c.dictionary_code
+                LEFT JOIN t_sys_dictionary d
+                ON a.area_id = d.dictionary_code
+                LEFT JOIN t_sys_customer e
+                ON a.invite_code = e.invite_code
+                where a.is_delete = 0
+                and e.user_code = #{userId}) address,
+            </if>
+            <if test="role == 2">
+               (select phone
+                from t_sys_user
+                where is_delete = 0
+                and user_code = #{userId}) phone,
+               (select user_name
+                from t_sys_user
+                where is_delete = 0
+                and user_code = #{userId}) driverName,
+            </if>
+            t.version version
+        from t_sys_user t
+        where t.is_delete = 0
+        and t.user_code = #{userId}
     </select>
+
+    <!--查询原密码-->
+    <select id="getPassword" parameterType="com.xzsd.app.userInformation.entity.PasswordInfo" resultType="com.xzsd.app.userInformation.entity.PasswordInfo">
+        select
+            password password,
+            version version
+        from t_sys_user
+        where is_delete = 0
+        and user_code = #{userCode}
+    </select>
+
+    <!--修改个人密码-->
+    <update id="updatePassword" parameterType="com.xzsd.app.userInformation.entity.PasswordInfo">
+        update t_sys_user
+        set
+            password = #{newPassword},
+            version = version + 1
+        where user_code = #{userCode}
+        and version = #{version}
+    </update>
 </mapper>

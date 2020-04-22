@@ -21,4 +21,15 @@ public class PasswordUtils {
         return bCryptPasswordEncoder.encode(rawPassword);
     }
 
+    /**
+     * 校验两个密码是否相同
+     * @param oldPassword 未加密密码
+     * @param newPassword 加密后密码
+     * @return
+     */
+    public static boolean passwordMatch(String oldPassword,String newPassword){
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        return bCryptPasswordEncoder.matches(oldPassword,newPassword);
+    }
+
 }

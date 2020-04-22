@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.clientGoods.dao.ClientGoodsDao">
+
+    <resultMap id="twoClassifyGoods" type="com.xzsd.app.clientGoods.entity.TwoClassifyInfo">
+        <id column="classifyId" property="classifyId"/>
+        <result column="classifyName" property="classifyName"/>
+        <collection property="goodsList" ofType="com.xzsd.app.clientGoods.entity.GoodsVo">
+            <id column="goodsCode" property="goodsCode"/>
+            <result column="goodsName" property="goodsName"/>
+            <result column="goodsImagePath" property="goodsImagePath"/>
+            <result column="goodsPrice" property="goodsPrice"/>
+        </collection>
+    </resultMap>
+
+    <!--查询商品信息详情接口-->
+    <select id="getGoods" parameterType="java.lang.String" resultType="com.xzsd.app.clientGoods.entity.GoodsInfo">
+        select
+            goods_code goodsCode,
+            goods_name goodsName,
+            isbn isbn,
+            introduce goodsDescribe,
+            selling_price goodsPrice,
+            goods_image goodsImagePath,
+            rating_star goodsEvaluateScore,
+            author goodsAuthor,
+            press goodsPress
+        from t_sys_goods
+        where is_delete = 0
+        and goods_code = #{goodsCode}
+    </select>
+
+    <!--查询一级商品分类列-->
+    <select id="listOneGoodsClassify" resultType="com.xzsd.app.clientGoods.entity.OneClassifyInfo">
+        select
+            sort_code classifyId,
+            sort_name classifyName
+        from t_goods_sort
+        where is_delete = 0
+        and parent_code = 0
+        order by create_time DESC
+    </select>
+
+    <!--查询二级商品分类以及商品-->
+    <select id="listGetClassGoods" parameterType="java.lang.String" resultMap="twoClassifyGoods">
+        select
+            t1.sort_code classifyId,
+            t1.sort_name classifyName,
+            t2.goods_code goodsCode,
+            t2.goods_name goodsName,
+            t2.goods_image goodsImagePath,
+            t2.selling_price goodsPrice
+        from t_goods_sort t1
+        LEFT JOIN t_sys_goods t2
+        ON (t1.sort_code = t2.second_sort_id
+        and t2.is_delete =0)
+        where t1.is_delete = 0
+        and t1.parent_code = #{classifyId}
+        order by t2.create_time DESC
+    </select>
+</mapper>

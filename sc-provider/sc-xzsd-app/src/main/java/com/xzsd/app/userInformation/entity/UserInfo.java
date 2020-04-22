@@ -30,9 +30,13 @@ public class UserInfo {
      */
     private String address;
     /**
-     * 电话
+     * 司机电话
      */
     private String phone;
+    /**
+     * 司机名称
+     */
+    private String driverName;
     /**
      * 版本号
      */
@@ -100,6 +104,14 @@ public class UserInfo {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
     }
 
     public String getVersion() {

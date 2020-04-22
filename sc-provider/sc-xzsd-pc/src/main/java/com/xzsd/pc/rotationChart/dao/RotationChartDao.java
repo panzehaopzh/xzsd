@@ -54,9 +54,11 @@ public interface RotationChartDao {
 
     /**
      * 轮播图状态修改
-     * @param rotationChartInfo
+     * @param listCode
+     * @param chartState
+     * @param userId
      * @return
      */
-    int updateRotationChartState(RotationChartInfo rotationChartInfo);
+    int updateRotationChartState(@Param("listCode")List<String> listCode,@Param("chartState") String chartState,@Param("userId") String userId);
 
 }

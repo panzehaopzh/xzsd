@@ -102,14 +102,17 @@ public class RotationChartService {
 
     /**
      * RotationChartInfo 轮播图状态修改
-     * @param rotationChartInfo
+     * @param chartId
+     * @param chartState
+     * @param userId
      * @return
      * @author panzehao
      * @date 2020-04-10
      */
     @Transactional(rollbackFor = Exception.class)
-    public AppResponse updateRotationChartState(RotationChartInfo rotationChartInfo){
-        int count = rotationChartDao.updateRotationChartState(rotationChartInfo);
+    public AppResponse updateRotationChartState(String chartId,String chartState,String userId){
+        List<String> listCode = Arrays.asList(chartId.split(","));
+        int count = rotationChartDao.updateRotationChartState(listCode,chartState,userId);
         if(0 == count){
             return AppResponse.versionError("轮播图状态修改失败，请重试！");
         }

@@ -20,7 +20,7 @@ public class GoodsInfo {
     /**
      * 书号
      */
-    private String ISBM;
+    private String isbn;
     /**
      * 一级分类id
      */
@@ -150,12 +150,12 @@ public class GoodsInfo {
         this.goodsName = goodsName;
     }
 
-    public String getISBM() {
-        return ISBM;
+    public String getIsbn() {
+        return isbn;
     }
 
-    public void setISBM(String ISBM) {
-        this.ISBM = ISBM;
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
     public String getFirstSortId() {

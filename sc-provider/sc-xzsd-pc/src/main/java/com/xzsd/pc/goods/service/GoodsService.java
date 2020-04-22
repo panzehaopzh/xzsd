@@ -68,9 +68,12 @@ public class GoodsService {
         ArrayList listGoodsCode = new ArrayList<String>(listCode);
         listGoodsCode.removeAll(goodsCodeList);
         //查询选中的商品编号中在轮播图和热门商品的商品名称
-        List<String> goodsNameList = goodsDao.listGoodsName(goodsCodeList);
+        List<String> goodsNameList = new ArrayList<String>();
+        if(goodsCodeList.size() != 0) {
+            goodsNameList = goodsDao.listGoodsName(goodsCodeList);
+        }
         if(listGoodsCode.size() == 0){
-            return AppResponse.versionError("删除失败，商品" + goodsNameList +"都处于轮播图或热门商品上，无法删除！");
+            return AppResponse.versionError("删除失败，商品" + goodsNameList +"正处于轮播图或热门商品上，无法删除！");
         }
         //删除商品
         int count = goodsDao.deleteGoods(listGoodsCode,userId);

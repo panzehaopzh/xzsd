@@ -92,11 +92,14 @@
             t2.sort_code secondSortCode,
             t2.sort_name secondSortName,
             t2.version version2
-        from t_goods_sort t1,
-             t_goods_sort t2
+        from t_goods_sort t1
+        LEFT JOIN t_goods_sort t2
+        ON (t1.sort_code = t2.parent_code
+        and t2.parent_code is NOT NULL
+        and t2.is_delete = 0)
         where t1.is_delete = 0
-          and t1.sort_code = t2.parent_code
-        order by t1.create_time
+          and t1.parent_code = 0
+        order by t1.create_time DESC
     </select>
 
     <!--获取商品分类信息-->

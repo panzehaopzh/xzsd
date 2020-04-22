@@ -18,7 +18,7 @@
       insert into t_sys_goods
       (goods_code,
        goods_name,
-       ISBM,
+       isbn,
        first_sort_id,
        second_sort_id,
        advert,
@@ -39,7 +39,7 @@
       values
        (#{goodsCode},
         #{goodsName},
-        #{ISBM},
+        #{isbn},
         #{firstSortId},
         #{secondSortId},
         #{advert},
@@ -110,7 +110,7 @@
         update t_sys_goods
         set
             goods_name = #{goodsName},
-            ISBM = #{ISBM},
+            isbn = #{isbn},
             first_sort_id = #{firstSortId},
             second_sort_id = #{secondSortId},
             advert = #{advert},
@@ -148,7 +148,7 @@
             a.pageview pageview,
             a.business_name businessName,
             a.stock stock,
-            a.ISBM ISBM,
+            a.isbn isbn,
             a.press press,
             a.author author,
             a.goods_image goodsImage,
@@ -196,7 +196,7 @@
             a.pageview pageview,
             a.business_name businessName,
             a.stock stock,
-            a.ISBM ISBM,
+            a.isbn isbn,
             a.press press,
             a.author author,
             a.goods_image goodsImage,

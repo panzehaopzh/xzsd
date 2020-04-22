@@ -108,18 +108,18 @@ public class RotationChartController {
 
     /**
      * RotationChartInfo 轮播图状态修改
-     * @param rotationChartInfo
+     * @param chartId
+     * @param chartState
      * @return
      * @author panzehao
      * @date 2020-04-10
      */
     @PostMapping("updateRotationChartState")
-    public AppResponse updateRotationChartState(RotationChartInfo rotationChartInfo){
+    public AppResponse updateRotationChartState(String chartId,String chartState){
         try{
             //获取用户id
             String userId = SecurityUtils.getCurrentUserId();
-            rotationChartInfo.setUpdateId(userId);
-            return rotationChartService.updateRotationChartState(rotationChartInfo);
+            return rotationChartService.updateRotationChartState(chartId,chartState,userId);
         }catch (Exception e){
             logger.error("轮播图状态修改异常",e);
             System.out.println(e.toString());
