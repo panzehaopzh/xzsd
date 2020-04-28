@@ -76,6 +76,10 @@
         <if test="orderStateId != null and orderStateId != ''">
             and t2.order_state = #{orderStateId}
         </if>
+        <if test="orderStateId == 3 ">
+            and (t2.order_state = 3
+            or  t2.order_state = 4)
+        </if>
     </select>
 
     <!--修改店长订单状态-->

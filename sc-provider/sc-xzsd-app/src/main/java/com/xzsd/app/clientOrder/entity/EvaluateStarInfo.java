@@ -6,13 +6,17 @@ public class EvaluateStarInfo {
      */
     private String goodsCode;
     /**
-     * 商品评价星级总数
+     * 商品评价星级
      */
-    private String evaluateStarCount;
+    private String evaluateStar;
     /**
-     * 商品评价总数
+     * 订单商品购买数量
      */
-    private String evaluateGoodsCount;
+    private int goodsCount;
+    /**
+     * 用户id
+     */
+    private String userId;
 
     public String getGoodsCode() {
         return goodsCode;
@@ -22,19 +26,27 @@ public class EvaluateStarInfo {
         this.goodsCode = goodsCode;
     }
 
-    public String getEvaluateStarCount() {
-        return evaluateStarCount;
+    public String getEvaluateStar() {
+        return evaluateStar;
     }
 
-    public void setEvaluateStarCount(String evaluateStarCount) {
-        this.evaluateStarCount = evaluateStarCount;
+    public void setEvaluateStar(String evaluateStar) {
+        this.evaluateStar = evaluateStar;
     }
 
-    public String getEvaluateGoodsCount() {
-        return evaluateGoodsCount;
+    public int getGoodsCount() {
+        return goodsCount;
     }
 
-    public void setEvaluateGoodsCount(String evaluateGoodsCount) {
-        this.evaluateGoodsCount = evaluateGoodsCount;
+    public void setGoodsCount(int goodsCount) {
+        this.goodsCount = goodsCount;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

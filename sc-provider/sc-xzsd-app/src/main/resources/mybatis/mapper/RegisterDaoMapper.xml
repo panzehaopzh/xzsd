@@ -12,6 +12,14 @@
         or idcard = #{idCard}
     </select>
 
+    <!--检验邀请码是否存在-->
+    <select id="countInviteCode" parameterType="com.xzsd.app.register.entity.RegisterInfo" resultType="int">
+        select count(store_id)
+        from t_sys_store
+        where is_delete = 0
+        and invite_code = #{inviteCode}
+    </select>
+
     <!--注册用户-->
     <insert id="clientRegister" parameterType="com.xzsd.app.register.entity.RegisterInfo">
         insert into t_sys_user

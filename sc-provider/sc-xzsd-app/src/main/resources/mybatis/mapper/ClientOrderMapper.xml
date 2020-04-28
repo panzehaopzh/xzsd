@@ -175,6 +175,19 @@
         and version = #{version}
     </update>
 
+    <!--取消订单时库存回滚-->
+    <update id="rollBackStock" parameterType="java.util.List">
+        <foreach collection="listGoodsCount" item="goods" separator=";">
+            update t_sys_goods
+            set
+            stock = stock + #{goods.goodsCount},
+            update_id = #{userId},
+            update_time = now(),
+            version = version + 1
+            where goods_code = #{goods.goodsCode}
+        </foreach>
+    </update>
+
     <!--查询订单详情-->
     <select id="listOrderDeepen" parameterType="java.lang.String" resultMap="orderDetail">
         select
@@ -238,7 +251,7 @@
              update_time,
              version)
             values
-        <foreach collection="evaluateInfoList" item="evaluate" index="index"  separator="," >
+        <foreach collection="evaluateList" item="evaluate" index="index"  separator="," >
             (#{evaluate.evaluateCode},
              #{evaluate.orderId},
              #{evaluate.goodsCode},
@@ -255,24 +268,45 @@
 
     <!--查询商品评价星级-->
     <select id="listEvaluateStar" parameterType="java.util.List" resultType="com.xzsd.app.clientOrder.entity.EvaluateStarInfo">
+        <foreach item="item" index="index" collection="listGoodsCode" open="(" separator="," close=")">
         select
             goods_code goodsCode,
-            sum(evaluate_star) evaluateStarCount,
-            count(evaluate_code) evaluateGoodsCount
+            avg(evaluate_star)
         from t_goods_evaluate
         where is_delete = 0
-        and goods_code in
-        <foreach item="item" index="index" collection="listGoodsCode" open="(" separator="," close=")">
-            #{item}
+        and goods_code = #{item}
         </foreach>
     </select>
+
+    <!--查询订单商品购买数量-->
+    <select id="listGoodsCount" parameterType="java.lang.String" resultType="com.xzsd.app.clientOrder.entity.EvaluateStarInfo">
+        select
+            goods_code goodsCode,
+            buy_num goodsCount
+        from t_order_detail
+        where is_delete = 0
+        and order_code = #{orderId}
+    </select>
+
+    <!--更新商品库存-->
+    <update id="updateSalesVolume" parameterType="java.util.List">
+        <foreach collection="listGoodsCount" item="goods" separator=";">
+            update t_sys_goods
+            set
+            sales_volume = sales_volume - #{goods.goodsCount},
+            update_id = #{userId},
+            update_time = now(),
+            version = version + 1
+            where goods_code = #{goods.goodsCode}
+        </foreach>
+    </update>
 
     <!--更新商品星级-->
     <update id="updateGoodsStar" parameterType="java.util.List">
         <foreach collection="listGoodsStar" item="goods" separator=";">
             update t_sys_goods
             set
-            rating_star = #{goods.evaluateStarCount},
+            rating_star = #{goods.evaluateStar},
             update_id = #{goods.userId},
             update_time = now(),
             version = version + 1

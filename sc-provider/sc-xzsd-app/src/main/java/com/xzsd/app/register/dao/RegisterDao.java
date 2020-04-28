@@ -19,6 +19,13 @@ public interface RegisterDao {
     int countRegister(RegisterInfo registerInfo);
 
     /**
+     * 检验邀请码是否存在
+     * @param registerInfo
+     * @return
+     */
+    int countInviteCode(RegisterInfo registerInfo);
+
+    /**
      * 注册用户
      * @param registerInfo
      * @return

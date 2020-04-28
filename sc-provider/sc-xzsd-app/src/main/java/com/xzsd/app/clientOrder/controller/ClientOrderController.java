@@ -140,10 +140,11 @@ public class ClientOrderController {
      * @author panzehao
      * @date 2020-04-27
      */
-    @PostMapping("updateOrderState")
-    public AppResponse addGoodsEvaluate(@RequestBody JSONObject evaluateOrder){
+    @PostMapping("addGoodsEvaluate")
+    public AppResponse addGoodsEvaluate(@RequestBody JSONObject orderEvaluate){
         try{
-            EvaluateInfo evaluateInfo = evaluateOrder.toJavaObject(EvaluateInfo.class);
+            JSONObject orderEvaluateJson = orderEvaluate.getJSONObject("orderEvaluate");
+            EvaluateInfo evaluateInfo = orderEvaluate.toJavaObject(orderEvaluateJson,EvaluateInfo.class);
             //获取用户id
             String userId = SecurityUtils.getCurrentUserId();
             return clientOrderService.addGoodsEvaluate(evaluateInfo,userId);

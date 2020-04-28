@@ -36,6 +36,13 @@ public class RegisterService {
         if(0 != countRegister){
             return AppResponse.bizError("该用户名或手机号或身份证号已存在，请重新输入！");
         }
+        //检验邀请码是否存在
+        if(registerInfo.getInviteCode() != null && !"".equals(registerInfo.getInviteCode())){
+            int countInviteCode = registerDao.countInviteCode(registerInfo);
+            if(0 == countInviteCode){
+                return AppResponse.bizError("该邀请码不存在，请重新输入！");
+            }
+        }
         registerInfo.setUserCode(StringUtil.getCommonCode(2));
         //密码加密
         registerInfo.setPassword(PasswordUtils.generatePassword(registerInfo.getPassword()));

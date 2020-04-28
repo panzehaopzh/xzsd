@@ -54,15 +54,21 @@ public class ClientOrderService {
         double goodsOrderCount = 0.0f;
         //生成订单编号
         String orderId = StringUtil.getCommonCode(2);
+        //判断商品数量是否超过库存
+        for(int i = 0; i < listGoodsStock.size();i++) {
+            for(int j = 0; j < listGoodsStock.size();j++) {
+                if(listGoodsCode.get(i).equals(listGoodsStock.get(j).getGoodsCode())) {
+                    if (Integer.valueOf(listClientGoodsNum.get(i)) > listGoodsStock.get(j).getGoodsStock()) {
+                        return AppResponse.bizError("当前购买的商品编号为" + listGoodsStock.get(j).getGoodsCode() + "的商品数量已超过库存，请重新选择商品数量！");
+                    }
+                    //更新商品库存
+                    listGoodsStock.get(j).setGoodsStock(listGoodsStock.get(j).getGoodsStock()-Integer.valueOf(listClientGoodsNum.get(i)));
+                }
+            }
+        }
         //遍历商品
         for(int i = 0;i < listGoodsStock.size();i++){
-            //判断商品数量是否超过库存
-            if(Integer.valueOf(listClientGoodsNum.get(i)) > listGoodsStock.get(i).getGoodsStock()){
-                return AppResponse.bizError("当前购买的商品编号为" + listGoodsStock.get(i).getGoodsCode() + "的商品数量已超过库存，请重新选择商品数量！" );
-            }
             listGoodsStock.get(i).setUpdateId(orderInfo.getCreateId());
-            //更新商品库存
-            listGoodsStock.get(i).setGoodsStock(listGoodsStock.get(i).getGoodsStock()-Integer.valueOf(listClientGoodsNum.get(i)));
             //计算订单总价
             goodsOrderCount += new BigDecimal(listGoodsPrice.get(i)).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue()*Integer.valueOf(listClientGoodsNum.get(i));
             //计算单个商品总价
@@ -128,6 +134,16 @@ public class ClientOrderService {
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateOrderState(OrderStateInfo orderStateInfo){
         int count = clientOrderDao.updateOrderState(orderStateInfo);
+        //取消订单，库存回滚
+        if ("5".equals(orderStateInfo.getOrderStateId())){
+            //查询订单商品购买数量
+            List<EvaluateStarInfo> listGoodsCount = clientOrderDao.listGoodsCount(orderStateInfo.getOrderId());
+            //库存回滚
+            int rollBackStock = clientOrderDao.rollBackStock(listGoodsCount,orderStateInfo.getUserId());
+            if(0 == rollBackStock){
+                return AppResponse.bizError("库存回滚失败，请重试！");
+            }
+        }
         if(0 == count){
             return AppResponse.versionError("修改订单状态失败，请重试！");
         }
@@ -177,23 +193,28 @@ public class ClientOrderService {
             evaluateOrder.getEvaluateList().get(i).setOrderId(evaluateOrder.getOrderId());
             listGoodsCode.add(evaluateOrder.getEvaluateList().get(i).getGoodsCode());
         }
-        //查询商品星级
-        List<EvaluateStarInfo> listGoodsStar = clientOrderDao.listEvaluateStar(listGoodsCode);
-        //计算商品星级
-        for(int i = 0; i < listGoodsStar.size() ; i++){
-            double star = new BigDecimal(listGoodsStar.get(i).getEvaluateStarCount()).setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue() + evaluateOrder.getEvaluateList().get(i).getEvaluateScore();
-            int count = Integer.valueOf(listGoodsStar.get(i).getEvaluateGoodsCount()) + 1;
-            double avgStar = new BigDecimal(star / count).setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();
-            listGoodsStar.get(i).setEvaluateStarCount(String.valueOf(avgStar));
-        }
-
-        //更新商品星级
-        int updateGoodsStar = clientOrderDao.updateGoodsStar(listGoodsStar);
-        //更新订单状态为已完成
-        int updateOrderStates = clientOrderDao.updateOrderStates(evaluateOrder.getOrderId(),userId);
         //新增评价
         int addGoodsEvaluate = clientOrderDao.addGoodsEvaluate(evaluateOrder.getEvaluateList());
-        if(0 == addGoodsEvaluate || 0 == updateGoodsStar || 0 == updateOrderStates){
+        //查询商品星级
+        List<EvaluateStarInfo> listGoodsStar = clientOrderDao.listEvaluateStar(listGoodsCode);
+        //查询订单商品购买数量
+        List<EvaluateStarInfo> listGoodsCount = clientOrderDao.listGoodsCount(evaluateOrder.getOrderId());
+        //将商品星级保留一位小数
+        for(int i = 0; i < listGoodsStar.size() ; i++){
+            double avgStar = 0.0f;
+            if(listGoodsStar.get(i).getEvaluateStar() != null) {
+                avgStar = new BigDecimal(listGoodsStar.get(i).getEvaluateStar()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+            }
+            listGoodsStar.get(i).setEvaluateStar(String.valueOf(avgStar));
+            listGoodsStar.get(i).setUserId(userId);
+        }
+        //更新商品销量
+        int updateSalesVolume = clientOrderDao.updateSalesVolume(listGoodsCount,userId);
+        //更新商品星级
+        int updateGoodsStar = clientOrderDao.updateGoodsStar(listGoodsStar);
+        //更新订单状态为已完成已评价
+        int updateOrderStates = clientOrderDao.updateOrderStates(evaluateOrder.getOrderId(),userId);
+        if(0 == addGoodsEvaluate || 0 == updateGoodsStar || 0 == updateOrderStates || 0 == updateSalesVolume){
             return AppResponse.versionError("评价失败，请重试！");
         }
         return AppResponse.success("评价成功！");

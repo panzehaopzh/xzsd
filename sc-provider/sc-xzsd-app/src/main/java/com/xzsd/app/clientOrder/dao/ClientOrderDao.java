@@ -66,6 +66,14 @@ public interface ClientOrderDao {
     int updateOrderState(OrderStateInfo orderStateInfo);
 
     /**
+     * 取消订单时库存回滚
+     * @param listGoodsCount
+     * @param userId
+     * @return
+     */
+    int rollBackStock(@Param("listGoodsCount") List<EvaluateStarInfo> listGoodsCount,@Param("userId")String userId);
+
+    /**
      * 查询订单详情
      * @param orderId
      * @return
@@ -81,10 +89,10 @@ public interface ClientOrderDao {
 
     /**
      * 新增订单商品评价
-     * @param evaluateInfoList
+     * @param evaluateList
      * @return
      */
-    int addGoodsEvaluate(List<GoodsEvaluateInfo> evaluateInfoList);
+    int addGoodsEvaluate(@Param("evaluateList") List<GoodsEvaluateInfo> evaluateList);
 
     /**
      * 查询商品评价星级
@@ -94,6 +102,21 @@ public interface ClientOrderDao {
     List<EvaluateStarInfo> listEvaluateStar(@Param("listGoodsCode") List<String> listGoodsCode);
 
     /**
+     * 查询订单商品购买数量
+     * @param orderId
+     * @return
+     */
+    List<EvaluateStarInfo> listGoodsCount(@Param("orderId") String orderId);
+
+    /**
+     * 更新商品库存
+     * @param listGoodsCount
+     * @param userId
+     * @return
+     */
+    int updateSalesVolume(@Param("listGoodsCount") List<EvaluateStarInfo> listGoodsCount,@Param("userId") String userId);
+
+    /**
      * 更新商品星级
      * @param listGoodsStar
      * @return
@@ -101,7 +124,7 @@ public interface ClientOrderDao {
     int updateGoodsStar(@Param("listGoodsStar") List<EvaluateStarInfo> listGoodsStar);
 
     /**
-     * 修改订单状态为已完成
+     * 修改订单状态为已完成已评价
      * @param orderId
      * @param userId
      * @return
