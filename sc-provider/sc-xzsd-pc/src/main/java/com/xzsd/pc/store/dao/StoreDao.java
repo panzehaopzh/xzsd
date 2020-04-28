@@ -80,7 +80,7 @@ public interface StoreDao {
      * @param storeInfo
      * @return
      */
-    List<StoreDTO> listStore(StoreInfo storeInfo);
+    List<StoreDTO> listStoreByPage(StoreInfo storeInfo);
 
     /**
      * 查询省市区列表

@@ -18,6 +18,10 @@ public class RegisterInfo {
      */
     private String password;
     /**
+     * 确认密码
+     */
+    private String confirmPassword;
+    /**
      * 用户头像图片路径
      */
     private String imagePath;
@@ -96,6 +100,14 @@ public class RegisterInfo {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 
     public String getImagePath() {

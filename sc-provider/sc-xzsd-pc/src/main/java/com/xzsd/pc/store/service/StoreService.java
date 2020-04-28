@@ -43,19 +43,23 @@ public class StoreService {
     @Transactional(rollbackFor = Exception.class)
     public AppResponse addStore(StoreInfo storeInfo){
         //检验店长编号是否存在
-        int countUserCode = storeDao.countUserCode(storeInfo);
-        if(0 == countUserCode){
-            return AppResponse.bizError("该店长编号不存在，请重新输入！");
-        }
-        //检验店长是否已绑定门店
-        int countStore = storeDao.countStore(storeInfo);
-        if(0 != countStore){
-            return AppResponse.bizError("该店长已有门店存在，请重新输入！");
+        if(storeInfo.getUserCode() != null && !"".equals(storeInfo.getUserCode())) {
+            int countUserCode = storeDao.countUserCode(storeInfo);
+            if (0 == countUserCode) {
+                return AppResponse.bizError("该店长编号不存在，请重新输入！");
+            }
+            //检验店长是否已绑定门店
+            int countStore = storeDao.countStore(storeInfo);
+            if (0 != countStore) {
+                return AppResponse.bizError("该店长已有门店存在，请重新输入！");
+            }
         }
         //检验营业执照编码是否存在
-        int countBusiness = storeDao.countBusiness(storeInfo);
-        if(0 != countBusiness){
-            return AppResponse.bizError("该营业执照编码已存在，请重新输入！");
+        if(storeInfo.getBusinessLicense() != null && !"".equals(storeInfo.getBusinessLicense())){
+            int countBusiness = storeDao.countBusiness(storeInfo);
+            if (0 != countBusiness) {
+                return AppResponse.bizError("该营业执照编码已存在，请重新输入！");
+            }
         }
         storeInfo.setStoreId(StringUtil.getCommonCode(2));
         //生成邀请码
@@ -87,19 +91,23 @@ public class StoreService {
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateStore(StoreInfo storeInfo){
         //检验店长编号是否存在
-        int countUserCode = storeDao.countUserCode(storeInfo);
-        if(0 == countUserCode){
-            return AppResponse.bizError("该店长编号不存在，请重新输入！");
-        }
-        //检验店长是否已绑定门店
-        int countStore = storeDao.countStore(storeInfo);
-        if(0 != countStore){
-            return AppResponse.bizError("该店长已有门店存在，请重新输入！");
+        if(storeInfo.getUserCode() != null && !"".equals(storeInfo.getUserCode())) {
+            int countUserCode = storeDao.countUserCode(storeInfo);
+            if (0 == countUserCode) {
+                return AppResponse.bizError("该店长编号不存在，请重新输入！");
+            }
+            //检验店长是否已绑定门店
+            int countStore = storeDao.countStore(storeInfo);
+            if (0 != countStore) {
+                return AppResponse.bizError("该店长已有门店存在，请重新输入！");
+            }
         }
         //检验营业执照编码是否存在
-        int countBusiness = storeDao.countBusiness(storeInfo);
-        if(0 != countBusiness){
-            return AppResponse.bizError("该营业执照编码已存在，请重新输入！");
+        if(storeInfo.getBusinessLicense() != null && !"".equals(storeInfo.getBusinessLicense())) {
+            int countBusiness = storeDao.countBusiness(storeInfo);
+            if (0 != countBusiness) {
+                return AppResponse.bizError("该营业执照编码已存在，请重新输入！");
+            }
         }
         //修改门店信息
         int count = storeDao.updateStore(storeInfo);
@@ -151,7 +159,7 @@ public class StoreService {
         PageHelper.startPage(storeInfo.getPageNum(),storeInfo.getPageSize());
         //获取登录用户的角色
         storeInfo.setRole(userDao.getRoleById(storeInfo.getUserId()));
-        List<StoreDTO> storeDTOList = storeDao.listStore(storeInfo);
+        List<StoreDTO> storeDTOList = storeDao.listStoreByPage(storeInfo);
         //包装Page对象
         PageInfo<StoreDTO> pageDate = new PageInfo<>(storeDTOList);
         return AppResponse.success("查询成功！",pageDate);

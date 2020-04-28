@@ -1,6 +1,7 @@
 package com.xzsd.app.clientGoods.controller;
 
 import com.neusoft.core.restful.AppResponse;
+import com.xzsd.app.clientGoods.entity.GoodsEvaluateInfo;
 import com.xzsd.app.clientGoods.service.ClientGoodsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,23 @@ public class ClientGoodsController {
             return clientGoodsService.getGoods(goodsCode);
         }catch (Exception e){
             logger.error("商品信息详情查询失败",e);
+            System.out.println(e.toString());
+            throw e;
+        }
+    }
+
+    /**
+     * clientGoods 查询商品评价列表
+     * @param goodsEvaluateInfo
+     * @return AppResponse
+     * @author panzehao
+     * @date 2020-04-24
+     */
+    public AppResponse listGoodsEvaluates(GoodsEvaluateInfo goodsEvaluateInfo){
+        try{
+            return clientGoodsService.listGoodsEvaluates(goodsEvaluateInfo);
+        }catch (Exception e){
+            logger.error("商品评价列表查询失败",e);
             System.out.println(e.toString());
             throw e;
         }

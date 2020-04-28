@@ -3,7 +3,7 @@
 <mapper namespace="com.xzsd.pc.customer.dao.CustomerDao">
 
     <!--查询客户列表-->
-    <select id="listCustomer" parameterType="com.xzsd.pc.customer.entity.CustomerInfo" resultType="com.xzsd.pc.customer.entity.CustomerVo">
+    <select id="listCustomerByPage" parameterType="com.xzsd.pc.customer.entity.CustomerVo" resultType="com.xzsd.pc.customer.entity.CustomerVo">
         select
             a.user_code userCode,
             a.user_account userAccount,

@@ -120,7 +120,7 @@ public class HotGoodsService {
      */
     public AppResponse listHotGoods(HotGoodsInfo hotGoodsInfo){
         PageHelper.startPage(hotGoodsInfo.getPageNum(),hotGoodsInfo.getPageSize());
-        List<HotGoodsVo> hotGoodsVoList = hotGoodsDao.listHotGoods(hotGoodsInfo);
+        List<HotGoodsVo> hotGoodsVoList = hotGoodsDao.listHotGoodsByPage(hotGoodsInfo);
         //包装Page对象
         PageInfo<HotGoodsVo> pageDate = new PageInfo<>(hotGoodsVoList);
         return AppResponse.success("查询成功！",pageDate);

@@ -2,6 +2,14 @@ package com.xzsd.pc.customer.entity;
 
 public class CustomerVo {
     /**
+     * 页码
+     */
+    private int pageSize;
+    /**
+     * 页数
+     */
+    private int pageNum;
+    /**
      * 用户编码
      */
     private String userCode;
@@ -29,6 +37,30 @@ public class CustomerVo {
      * 身份证
      */
     private String idCard;
+    /**
+     * 登录用户id
+     */
+    private String userId;
+    /**
+     * 角色
+     */
+    private String role;
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
 
     public String getUserCode() {
         return userCode;
@@ -84,5 +116,21 @@ public class CustomerVo {
 
     public void setIdCard(String idCard) {
         this.idCard = idCard;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

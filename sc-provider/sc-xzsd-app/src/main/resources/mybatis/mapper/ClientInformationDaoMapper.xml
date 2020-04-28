@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.clientInformation.dao.ClientInformationDao">
+
+    <!--查询邀请码是否存在-->
+    <select id="countInviteCode" parameterType="java.lang.String" resultType="int">
+        select count(invite_code)
+        from t_sys_store
+        where is_delete = 0
+        and invite_code = #{inviteCode}
+    </select>
+
+    <!--修改门店邀请码-->
+    <update id="updateClientInvite" parameterType="java.lang.String">
+        update t_sys_customer
+        set
+            invite_code = #{inviteCode},
+            update_id = #{userId},
+            update_time = now(),
+            version = version + 1
+        where user_code = #{userId}
+    </update>
+</mapper>

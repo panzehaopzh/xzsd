@@ -78,7 +78,7 @@
     </select>
 
     <!--查询热门位商品列表-->
-    <select id="listHotGoods" parameterType="com.xzsd.pc.hotGoods.entity.HotGoodsInfo" resultType="com.xzsd.pc.hotGoods.entity.HotGoodsVo">
+    <select id="listHotGoodsByPage" parameterType="com.xzsd.pc.hotGoods.entity.HotGoodsInfo" resultType="com.xzsd.pc.hotGoods.entity.HotGoodsVo">
         select
             a.hot_id hotId,
             a.hot_sort hotSort,

@@ -14,6 +14,10 @@ public class PasswordInfo {
      */
     private String newPassword;
     /**
+     * 确认密码
+     */
+    private String confirmPassword;
+    /**
      * 版本号
      */
     private String version;
@@ -40,6 +44,14 @@ public class PasswordInfo {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 
     public String getVersion() {

@@ -132,7 +132,7 @@ public class DriverService {
         PageHelper.startPage(driverInfo.getPageNum(),driverInfo.getPageSize());
         //获取登录用户的角色
         driverInfo.setRole(userDao.getRoleById(driverInfo.getUserId()));
-        List<DriverVo> driverVoList = driverDao.listDriver(driverInfo);
+        List<DriverVo> driverVoList = driverDao.listDriverByPage(driverInfo);
         //包装Page对象
         PageInfo<DriverVo> pageData = new PageInfo<>(driverVoList);
         return AppResponse.success("查询成功！",pageData);

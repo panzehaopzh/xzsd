@@ -1,5 +1,7 @@
 package com.xzsd.pc.order.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.neusoft.core.restful.AppResponse;
 import com.xzsd.pc.order.dao.OrderDao;
 import com.xzsd.pc.order.entity.OrderDetailInfo;
@@ -51,8 +53,11 @@ public class OrderService {
         //获取登录用户角色
         String role = userDao.getRoleById(orderInfo.getUserId());
         orderInfo.setRole(role);
-        List<OrderVo> orderVoList = orderDao.listOrder(orderInfo);
-        return AppResponse.success("查询成功！",orderVoList);
+        PageHelper.startPage(orderInfo.getPageNum(),orderInfo.getPageSize());
+        List<OrderVo> orderVoList = orderDao.listOrderByPage(orderInfo);
+        //包装Page对象
+        PageInfo<OrderVo> pageData = new PageInfo<OrderVo>(orderVoList);
+        return AppResponse.success("查询成功！",pageData);
     }
 
     /**

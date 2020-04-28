@@ -4,6 +4,7 @@ import com.neusoft.core.restful.AppResponse;
 
 import com.neusoft.security.client.utils.SecurityUtils;
 import com.xzsd.pc.customer.entity.CustomerInfo;
+import com.xzsd.pc.customer.entity.CustomerVo;
 import com.xzsd.pc.customer.service.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,18 +33,18 @@ public class CustomerController {
 
     /**
      * customer 查询客户列表
-     * @param customerInfo
+     * @param customerVo
      * @return AppResponse
      * @author panzehao
      * @date 2020-04-11
      */
     @RequestMapping(value = "listCustomer")
-    public AppResponse listCustomer(CustomerInfo customerInfo){
+    public AppResponse listCustomer(CustomerVo customerVo){
         try{
             //获取用户id
             String userId = SecurityUtils.getCurrentUserId();
-            customerInfo.setUserId(userId);
-            return customerService.listCustomer(customerInfo);
+            customerVo.setUserId(userId);
+            return customerService.listCustomer(customerVo);
         }catch (Exception e){
             logger.error("查询客户列表异常",e);
             System.out.println(e.toString());

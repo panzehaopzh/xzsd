@@ -57,7 +57,7 @@ public interface HotGoodsDao {
      * @param hotGoodsInfo
      * @return
      */
-    List<HotGoodsVo> listHotGoods(HotGoodsInfo hotGoodsInfo);
+    List<HotGoodsVo> listHotGoodsByPage(HotGoodsInfo hotGoodsInfo);
 
     /**
      * 查询展示数量

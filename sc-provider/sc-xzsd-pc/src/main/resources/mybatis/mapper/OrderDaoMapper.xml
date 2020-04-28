@@ -21,7 +21,7 @@
     </select>
 
     <!--查询订单列表-->
-    <select id="listOrder" parameterType="com.xzsd.pc.order.entity.OrderInfo" resultType="com.xzsd.pc.order.entity.OrderVo">
+    <select id="listOrderByPage" parameterType="com.xzsd.pc.order.entity.OrderInfo" resultType="com.xzsd.pc.order.entity.OrderVo">
         select
             a.order_code orderCode,
             a.order_amount orderAmount,

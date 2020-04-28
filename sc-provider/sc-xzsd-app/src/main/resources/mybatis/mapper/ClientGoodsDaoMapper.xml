@@ -30,6 +30,32 @@
         and goods_code = #{goodsCode}
     </select>
 
+    <!--查询商品评价列表-->
+    <select id="listGoodsEvaluates" parameterType="com.xzsd.app.clientGoods.entity.GoodsEvaluateInfo" resultType="com.xzsd.app.clientGoods.entity.GoodsEvaluateInfo">
+        select
+            b.user_account userAcct,
+            a.evaluate_content evaluateContent,
+            a.evaluate_star evaluateScore,
+            a.create_time createTime
+        from t_goods_evaluate a
+        LEFT JOIN t_sys_user b
+        ON a.create_id = b.user_code
+        where a.is_delete = 0
+        and a.goods_code = #{goodsCode}
+        <if test="evaluateScore == 1">
+            and a.evaluate_star = 0
+            or a.evaluate_star = 1
+        </if>
+        <if test="evaluateScore == 3">
+            and a.evaluate_star = 2
+            or a.evaluate_star = 3
+        </if>
+        <if test="evaluateScore == 5">
+            and a.evaluate_star = 4
+            or a.evaluate_star = 5
+        </if>
+    </select>
+
     <!--查询一级商品分类列-->
     <select id="listOneGoodsClassify" resultType="com.xzsd.app.clientGoods.entity.OneClassifyInfo">
         select

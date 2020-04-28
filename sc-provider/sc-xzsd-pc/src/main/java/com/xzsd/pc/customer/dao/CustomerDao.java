@@ -17,8 +17,8 @@ import java.util.List;
 public interface CustomerDao {
     /**
      * 查询客户列表
-     * @param customerInfo
+     * @param customerVo
      * @return 客户列表
      */
-    List<CustomerVo> listCustomer(CustomerInfo customerInfo);
+    List<CustomerVo> listCustomerByPage(CustomerVo customerVo);
 }

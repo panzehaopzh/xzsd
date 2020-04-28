@@ -79,5 +79,5 @@ public interface DriverDao {
      * @param driverInfo
      * @return
      */
-    List<DriverVo> listDriver(DriverInfo driverInfo);
+    List<DriverVo> listDriverByPage(DriverInfo driverInfo);
 }

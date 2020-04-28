@@ -1,10 +1,10 @@
 package com.xzsd.app.clientGoods.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.neusoft.core.restful.AppResponse;
 import com.xzsd.app.clientGoods.dao.ClientGoodsDao;
-import com.xzsd.app.clientGoods.entity.GoodsInfo;
-import com.xzsd.app.clientGoods.entity.OneClassifyInfo;
-import com.xzsd.app.clientGoods.entity.TwoClassifyInfo;
+import com.xzsd.app.clientGoods.entity.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -32,6 +32,21 @@ public class ClientGoodsService {
     public AppResponse getGoods(String goodsCode){
         GoodsInfo goodsInfo = clientGoodsDao.getGoods(goodsCode);
         return AppResponse.success("查询成功！",goodsInfo);
+    }
+
+    /**
+     * clientGoods 查询商品评价列表
+     * @param goodsEvaluateInfo
+     * @return
+     * @author panzehao
+     * @date 2020-04-24
+     */
+    public AppResponse listGoodsEvaluates(GoodsEvaluateInfo goodsEvaluateInfo){
+        PageHelper.startPage(goodsEvaluateInfo.getPageNum(),goodsEvaluateInfo.getPageSize());
+        List<GoodsEvaluateInfo> goodsEvaluateVoList = clientGoodsDao.listGoodsEvaluates(goodsEvaluateInfo);
+        //包装Page对象
+        PageInfo<GoodsEvaluateInfo> pageData = new PageInfo<GoodsEvaluateInfo>(goodsEvaluateVoList);
+        return AppResponse.success("查询成功！",goodsEvaluateVoList);
     }
 
     /**

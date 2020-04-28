@@ -119,21 +119,20 @@
             a.store_name storeName,
             a.telephone telephone,
             a.user_code userCode,
-            a.business_license businessLicence,
+            a.business_license businessLicense,
             a.province_id provinceId,
             b.dictionary_name provinceName,
             a.city_id cityId,
             c.dictionary_name cityName,
             a.area_id areaId,
-            d.dictionary
-            _name areaName,
+            d.dictionary_name areaName,
             a.address address,
             a.version version
         from t_sys_store a
         LEFT JOIN t_sys_dictionary b
         on a.province_id = b.dictionary_code
         LEFT JOIN t_sys_dictionary c
-        on a.city_id = b.dictionary_code
+        on a.city_id = c.dictionary_code
         LEFT JOIN t_sys_dictionary d
         on a.area_id = d.dictionary_code
         where a.store_id = #{storeId}
@@ -141,7 +140,7 @@
     </select>
 
     <!--查询门店信息列表-->
-    <select id="listStore" parameterType="com.xzsd.pc.store.entity.StoreInfo" resultType="com.xzsd.pc.store.entity.StoreDTO">
+    <select id="listStoreByPage" parameterType="com.xzsd.pc.store.entity.StoreInfo" resultType="com.xzsd.pc.store.entity.StoreDTO">
         select
             a.store_id storeId,
             a.store_name storeName,

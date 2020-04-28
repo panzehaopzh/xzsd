@@ -7,8 +7,8 @@
         select count(goods_code)
         from t_rotation_chart
         where is_delete = 0
-          and goods_code = #{goodsCode}
-           or sort = #{sort}
+          and (goods_code = #{goodsCode}
+           or sort = #{sort})
     </select>
 
     <!--新增轮播图-->

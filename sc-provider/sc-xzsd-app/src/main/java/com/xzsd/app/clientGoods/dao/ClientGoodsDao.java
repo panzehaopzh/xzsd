@@ -1,8 +1,6 @@
 package com.xzsd.app.clientGoods.dao;
 
-import com.xzsd.app.clientGoods.entity.GoodsInfo;
-import com.xzsd.app.clientGoods.entity.OneClassifyInfo;
-import com.xzsd.app.clientGoods.entity.TwoClassifyInfo;
+import com.xzsd.app.clientGoods.entity.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -22,6 +20,13 @@ public interface ClientGoodsDao {
      * @return
      */
     GoodsInfo getGoods(@Param("goodsCode") String goodsCode);
+
+    /**
+     * 查询商品评价列表
+     * @param goodsEvaluateInfo
+     * @return
+     */
+    List<GoodsEvaluateInfo> listGoodsEvaluates(GoodsEvaluateInfo goodsEvaluateInfo);
 
     /**
      * 查询一级商品分类列

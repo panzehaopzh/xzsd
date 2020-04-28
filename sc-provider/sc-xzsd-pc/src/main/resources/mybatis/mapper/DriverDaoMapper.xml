@@ -138,6 +138,7 @@
             b.phone phone,
             b.idcard idCard,
             b.user_account driverAccount,
+            b.password password,
             a.province_id provinceId,
             c.dictionary_name provinceName,
             a.city_id cityId,
@@ -159,7 +160,7 @@
     </select>
 
     <!--查询司机列表信息-->
-    <select id="listDriver" parameterType="com.xzsd.pc.driver.entity.DriverInfo" resultType="com.xzsd.pc.driver.entity.DriverVo">
+    <select id="listDriverByPage" parameterType="com.xzsd.pc.driver.entity.DriverInfo" resultType="com.xzsd.pc.driver.entity.DriverVo">
         select
             a.driver_code driverCode,
             b.user_name driverName,
@@ -171,6 +172,7 @@
         where a.driver_code = b.user_code
           and a.is_delete = 0
         <if test="role == 1">
+            and a.city_id = (select city_id from t_sys_store where user_code = #{userId})
             and a.area_id = (select area_id from t_sys_store where user_code = #{userId})
         </if>
         <if test="driverCode != null and driverCode != ''">

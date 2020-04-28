@@ -77,10 +77,7 @@
             update_id = #{userId},
             update_time = now(),
             version = version + 1
-        where sort_code in
-        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        where sort_code = #{sortId}
     </update>
 
     <!--商品分类列表-->
@@ -103,7 +100,7 @@
     </select>
 
     <!--获取商品分类信息-->
-    <select id="getGoodsSort" parameterType="java.lang.String" resultType="com.xzsd.pc.goodsSort.entity.GoodsSortInfo">
+    <select id="getGoodsSort" parameterType="java.lang.String" resultType="com.xzsd.pc.goodsSort.entity.GoodsSortVo">
         select
             sort_code sortId,
             sort_name sortName,

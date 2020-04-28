@@ -28,7 +28,7 @@ public interface OrderDao {
      * @param orderInfo
      * @return
      */
-    List<OrderVo> listOrder(OrderInfo orderInfo);
+    List<OrderVo> listOrderByPage(OrderInfo orderInfo);
 
     /**
      * 修改订单状态

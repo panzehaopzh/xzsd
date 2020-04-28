@@ -32,7 +32,7 @@
                  where is_delete = 0
                  and user_code = #{userId}) inviteCode,
                 (select
-                CONCAT_WS('-',b.dictionary_name,c.dictionary_name,d.dictionary_name,a.address)
+                CONCAT_WS(' ',b.dictionary_name,c.dictionary_name,d.dictionary_name,a.address)
                 FROM
                 t_sys_store a
                 LEFT JOIN t_sys_dictionary b
@@ -64,7 +64,7 @@
                  where t2.is_delete = 0
                  and t2.user_code = #{userId}) inviteCode,
                 (select
-                CONCAT_WS('-',b.dictionary_name,c.dictionary_name,d.dictionary_name,a.address)
+                CONCAT_WS(' ',b.dictionary_name,c.dictionary_name,d.dictionary_name,a.address)
                 FROM
                 t_sys_store a
                 LEFT JOIN t_sys_dictionary b

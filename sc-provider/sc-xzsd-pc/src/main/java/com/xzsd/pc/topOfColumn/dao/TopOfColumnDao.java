@@ -2,6 +2,7 @@ package com.xzsd.pc.topOfColumn.dao;
 
 import com.xzsd.pc.topOfColumn.entity.TopOfColumnInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @ClassName TopOfColumnDao
@@ -16,5 +17,5 @@ public interface TopOfColumnDao {
      * @param userId
      * @return
      */
-    TopOfColumnInfo getTopOfColumn(String userId);
+    TopOfColumnInfo getTopOfColumn(@Param("userId") String userId);
 }
